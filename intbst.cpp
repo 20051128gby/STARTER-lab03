@@ -139,12 +139,17 @@ int IntBST::count(Node *n) const {
 // Whenever you call this method from somewhere else, pass it
 // the root node as "n"
 IntBST::Node* IntBST::getNodeFor(int value, Node* n) const{
-    return NULL; // REPLACE THIS NON-SOLUTION
+    if (n == nullptr) return nullptr;
+    if (n->info == value) return n;
+    else if (value < n->info)
+        return getNodeFor(value, n->left);
+    else
+        return getNodeFor(value, n->right);
 }
 
 // returns true if value is in the tree; false if not
 bool IntBST::contains(int value) const {
-    return false; // REPLACE THIS NON-SOLUTION
+      return getNodeFor(value, root) != nullptr;
 }
 
 // returns the Node containing the predecessor of the given value
