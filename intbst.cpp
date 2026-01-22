@@ -9,22 +9,22 @@ using std::cout;
 
 // constructor sets up empty tree
 IntBST::IntBST() { 
-
-
+root = nullptr;
 }
 
 // destructor deletes all nodes
 IntBST::~IntBST() {
+    clear(root);
     root = nullptr;
 
 }
 
 // recursive helper for destructor
 void IntBST::clear(Node *n) {
-    if(root == nullptr)return;
-    clear(root->left);
-    clear(root->right);
-    delete root;
+    if(n == nullptr)return;
+    clear(n->left);
+    clear(n->right);
+    delete n;
 }
 
 // insert value in tree; return false if duplicate
@@ -153,27 +153,83 @@ bool IntBST::contains(int value) const {
 }
 
 // returns the Node containing the predecessor of the given value
-IntBST::Node* IntBST::getPredecessorNode(int value) const{
-    return NULL; // REPLACE THIS NON-SOLUTION
+IntBST::Node* IntBST::getPredecessorNode(int value) const {
+    Node* curr = getNodeFor(value, root);
+    if (curr == nullptr) return nullptr;
+
+
+    if (curr->left != nullptr) {
+        Node* p = curr->left;
+        while (p->right != nullptr) p = p->right;
+        return p;
+    }
+
+    Node* p = curr->parent;
+    while (p != nullptr && curr == p->left) {
+        curr = p;
+        p = p->parent;
+    }
+    return p;
 }
 
 // returns the predecessor value of the given value or 0 if there is none
 int IntBST::getPredecessor(int value) const{
-    return -1; // REPLACE THIS NON-SOLUTION
+    Node* curr = getPredecessorNode(value);
+    if (curr == nullptr) return 0;
+    return curr->info;
+
 }
 
 // returns the Node containing the successor of the given value
 IntBST::Node* IntBST::getSuccessorNode(int value) const{
-    return NULL; // REPLACE THIS NON-SOLUTION
+    Node* curr = getNodeFor(value,root);
+    if(curr == nullptr) return nullptr;
+
+    if(curr->right != nullptr){
+        Node* p = curr->right;
+        while (p->left != nullptr) p = p->left;
+        return p;
+    }
+
+    Node* p = curr->parent;
+    while(p != nullptr && p->right == curr){
+        curr = p;
+        p = p->parent;
+    }
+    return p;
 }
 
 // returns the successor value of the given value or 0 if there is none
 int IntBST::getSuccessor(int value) const{
-    return -1; // REPLACE THIS NON-SOLUTION
+    Node* curr = getSuccessorNode(value);
+    if (curr == nullptr) return 0;
+    return curr->info;
 }
 
 // deletes the Node containing the given value from the tree
 // returns true if the node exist and was deleted or false if the node does not exist
-bool IntBST::remove(int value){
-    return false; // REPLACE THIS NON-SOLUTION
+bool IntBST::remove(int value) {
+    Node* z = getNodeFor(value, root);
+
+    if (z == nullptr) return false;
+    if (z->left != nullptr && z->right != nullptr) {
+        Node* s = getSuccessorNode(z->info);
+        z->info = s->info;
+        z = s; 
+    }
+    Node* child = (z->left) ? z->left : z->right; 
+
+    if (child) child->parent = z->parent;
+
+    if (z->parent == nullptr) {
+        root = child;              
+    } else if (z == z->parent->left) {
+        z->parent->left = child;
+    } else {
+        z->parent->right = child;
+    }
+
+    delete z;
+    return true;
 }
+
